@@ -11,14 +11,14 @@ public class allFunction implements ActionListener {
 		/**
 		 * when the text field is empty
 		 */
-		if(window.fileLocation.getText().isEmpty()) {
+		if(TextGraph.fileLocation.getText().isEmpty()) {
 			JOptionPane.showMessageDialog(null, "Please choose a file!");
 		}
 		/**
 		 * when the text field is not empty
 		 */
 		else {
-			String filePath = window.fileLocation.getText();
+			String filePath = TextGraph.fileLocation.getText();
 			File file = new File(filePath);
 			/**
 			 * when we can get a text file using the provided path

@@ -5,7 +5,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 public class browseAction implements ActionListener{
 	public void actionPerformed(ActionEvent event) {
-		if(event.getSource().equals(window.browseFile)) {
+		if(event.getSource().equals(TextGraph.browseFile)) {
 			/**
 			 * create a file chooser
 			 */
@@ -19,7 +19,7 @@ public class browseAction implements ActionListener{
 			 */
 			if(returnVal == JFileChooser.APPROVE_OPTION) {
 				String filePath = selector.getSelectedFile().getPath();
-				window.fileLocation.setText(filePath);
+				TextGraph.fileLocation.setText(filePath);
 			}
 		}
 	}
