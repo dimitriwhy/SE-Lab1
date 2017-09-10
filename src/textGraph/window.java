@@ -1,7 +1,8 @@
 package textGraph;
-
 import javax.swing.*;
 import java.awt.*;
+import textGraph.browseAction;
+import textGraph.allFunction;
 class window{
 	private JFrame mainFrame;
 	private JLabel label1;
@@ -12,8 +13,6 @@ class window{
 	 * Launch the application;
 	 * @param args
 	 */
-
-
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
