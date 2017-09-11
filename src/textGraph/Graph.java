@@ -4,11 +4,11 @@ public class Graph {
 	/** n is the number of nodes in the graph */
 	public int n;
 	/** map is the adjacent matrix for graph */
-	int [][] map;
+	private int [][] map;
 	/** names is the word for a specific node */
-	String[] names;
+	private String[] names;
 	/** nameMap is the map between words to indexes */
-	Map<String, Integer> nameMap = new HashMap<String, Integer>();
+	private Map<String, Integer> nameMap = new HashMap<String, Integer>();
 	/**
 	 * @param input_n number of nodes in the graph
 	 */
@@ -67,9 +67,9 @@ public class Graph {
 	 * @param word2 word2
 	 * @return a list of indexes of bridge words from word1 to word2
 	 */
-	public List<Integer> getBridges(String word1, String word2){
+	public ArrayList<Integer> getBridges(String word1, String word2){
 		int u = getIndex(word1), v = getIndex(word2);
-		List<Integer> bridgeList = new ArrayList<Integer>();
+		ArrayList<Integer> bridgeList = new ArrayList<Integer>();
 		for (int x = 0; x < n; x++) {
 			if (x != u && x != v) {
 				if (queryWeight(u, x) > 0 && queryWeight(x, v) > 0) {
@@ -79,9 +79,44 @@ public class Graph {
 		}
 		return bridgeList;
 	}
-	
+	/**
+	 * calculate the SSSP DAG using Dijkstra's Algorithm.
+	 * @param u single source.
+	 * @return SSSP DAG adjacent matrix.
+	 */
+	public int[][] getShortestPath(int u) {
+		int[] distance = new int[n];
+		int[] visit = new int[n];
+		for (int i = 0; i < n; i++)
+			distance[i] = 1 << 29;
+		int [][] postNode = new int[n][n];
+		distance[u] = 0;
+		for (int i = 1; i < n; i++) {
+			int minimalDistance = 1 << 29;
+			int minimalNode = 0;
+			for (int v = 0; v < n; v++)
+				if (distance[v] < minimalDistance && visit[minimalNode] == 0) {
+					minimalDistance = distance[v];
+					minimalNode = u;
+				}
+			visit[minimalNode] = 1;
+			for (int v = 0; v < n; v++) {
+				if (v != minimalNode && map[minimalNode][v] != 0) {
+					if (distance[minimalNode] + map[minimalNode][v] < distance[v]) {
+						distance[v] = distance[minimalNode] + map[minimalNode][v];
+						for (int w = 0; w < n; w++)
+							postNode[w][v] = 0;
+						postNode[minimalNode][v] = 1;
+					}else if (distance[minimalNode] + map[minimalNode][v] == distance[v]) {
+						postNode[minimalNode][v] = 1;
+					}
+				}
+			}
+		}
+		return postNode;
+	}
 	String queryBridgeWords(Graph G, String word1, String word2) {
-		List<Integer> bridgeList = G.getBridges(word1, word2);
+		ArrayList<Integer> bridgeList = G.getBridges(word1, word2);
 		String output;
 		if (bridgeList.size() == 0) {
 			output = "No bridge words from "+word1+" to "+word2+"!";
