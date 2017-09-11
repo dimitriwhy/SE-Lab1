@@ -22,6 +22,21 @@ public class browseAction implements ActionListener{
 				TextGraph.fileLocation.setText(filePath);
 			}
 		}
+		else if(event.getSource().equals(TextGraph.browseTarget)){
+			/**
+			 * create a file chooser
+			 */
+			JFileChooser selector = new JFileChooser();
+			selector.setDialogTitle("Please choose the directory...");
+			selector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			int returnVal = selector.showOpenDialog(null);
+			/**
+			 * set the text in the text field using the path
+			 */
+		    if (returnVal == JFileChooser.APPROVE_OPTION) {
+		        String filePath = selector.getSelectedFile().getPath();
+		        TextGraph.targetLocation.setText(filePath);
+		    }
+		}
 	}
-
 }
