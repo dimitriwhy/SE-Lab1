@@ -84,7 +84,7 @@ public class Graph {
 	 * @param u single source.
 	 * @return SSSP DAG adjacent matrix.
 	 */
-	public int[][] getShortestPath(int u) {
+	int[][] getShortestPath(int u) {
 		int[] distance = new int[n];
 		int[] visit = new int[n];
 		for (int i = 0; i < n; i++)
@@ -114,20 +114,5 @@ public class Graph {
 			}
 		}
 		return postNode;
-	}
-	String queryBridgeWords(Graph G, String word1, String word2) {
-		ArrayList<Integer> bridgeList = G.getBridges(word1, word2);
-		String output;
-		if (bridgeList.size() == 0) {
-			output = "No bridge words from "+word1+" to "+word2+"!";
-		}else {
-			output = "The bridge words from "+word1+" to "+word2+" are: ";
-			for (int i = 0; i < bridgeList.size(); i++) {
-				if  (i != bridgeList.size() - 1)
-					output += " " + G.getName(bridgeList.get(i))+",";
-				else output += " and "+G.getName(bridgeList.get(i))+".";
-			}
-		}
-		return output;
 	}
 }
