@@ -66,7 +66,7 @@ public class GraphViz {
     /**
      * Define the index in the image size array.
      */
-    private int currentDpiPos = 7;
+    private int currentDpiPos = 15;
     /**
      * set the dir. where temporary files will be created.
      */
