@@ -113,6 +113,50 @@ public class Graph {
 				}
 			}
 		}
+		for (int i = 0; i < n; i++)
+			postNode[i][i] = distance[i];
 		return postNode;
+	}
+	void findPaths(int u, int v, ArrayList<String> shortestPaths, ArrayList<Integer> alreadyVisited, int[][] postNode) {
+		alreadyVisited.add(u);
+		if (u == v) {
+			String path = Integer.toString(postNode[v][v]) + " ";
+			int length = alreadyVisited.size();
+			for (int i = 0; i < length; i++)
+				path += getName(alreadyVisited.get(i)) + " ";
+			shortestPaths.add(path);
+			return;
+		}
+		for (int i = 0; i < n; i++)
+			if (i != u && postNode[u][i] > 0)
+				findPaths(i, v, shortestPaths, alreadyVisited, postNode);
+	}
+	public ArrayList<String> getShortestPathList(int u, int v){
+		int[][] postNode = getShortestPath(u);
+		Queue<Integer> Q = new LinkedList<Integer>();
+		int[] visit = new int[n];
+		visit[v] = 1;
+		Q.offer(v);
+		while (!Q.isEmpty()) {
+			int w = Q.poll();
+			for (int x = 0; x < n; x++)
+				if (postNode[x][w]  != 0 && x != w) {
+					postNode[x][w] = 2;
+					if (visit[x] == 0) {
+						visit[x] = 1;
+						Q.offer(x);
+					}
+				}
+		}
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < n; j++)
+				if (i != j) {
+					if (postNode[i][j] == 1) postNode[i][j] = 0;
+					if (postNode[i][j] == 2) postNode[i][j] = 1;
+				}
+		ArrayList<String> shortestPaths = new ArrayList<String>();
+		ArrayList<Integer> alreadyVisited = new ArrayList<Integer>();
+		findPaths(u,v,shortestPaths, alreadyVisited, postNode);
+		return shortestPaths;
 	}
 }
