@@ -46,11 +46,13 @@ public class Graph {
 		return map[u][v];
 	}
 	/**
-	 * return the index of word s.
+	 * return the index of word s, if s is not a word in graph, return -1.
 	 * @param s word
 	 * @return index of word s
 	 */
 	public int getIndex(String s) {
+		if (!nameMap.containsKey(s))
+			return -1;
 		return nameMap.get(s);
 	}
 	/**
@@ -168,9 +170,16 @@ public class Graph {
 		ArrayList<Integer> path = new ArrayList<Integer>();
 		while (u != v) {
 			path.add(u);
+			boolean flag = true;
 			for (int i = 0; i < n; i++)
-				if (i != u && postNode[u][i] > 0)
+				if (i != u && postNode[u][i] > 0) {
 					u = i;
+					flag = false;
+				}
+			if (flag) {
+				path.add(-1);
+				break;
+			}
 		}
 		return path;
 	}
