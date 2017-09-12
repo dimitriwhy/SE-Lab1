@@ -84,7 +84,7 @@ public class Graph {
 	 * @param u single source.
 	 * @return SSSP DAG adjacent matrix.
 	 */
-	int[][] getShortestPath(int u) {
+	int[][] _getShortestPath(int u) {
 		int[] distance = new int[n];
 		int[] visit = new int[n];
 		for (int i = 0; i < n; i++)
@@ -131,8 +131,7 @@ public class Graph {
 			if (i != u && postNode[u][i] > 0)
 				findPaths(i, v, shortestPaths, alreadyVisited, postNode);
 	}
-	public ArrayList<String> getShortestPathList(int u, int v){
-		int[][] postNode = getShortestPath(u);
+	void getShortestPathBetweenTwoNode(int u, int v, int[][] postNode) {
 		Queue<Integer> Q = new LinkedList<Integer>();
 		int[] visit = new int[n];
 		visit[v] = 1;
@@ -153,10 +152,26 @@ public class Graph {
 				if (i != j) {
 					if (postNode[i][j] == 1) postNode[i][j] = 0;
 					if (postNode[i][j] == 2) postNode[i][j] = 1;
-				}
+				}		
+	}
+	public ArrayList<String> getShortestPathList(int u, int v){
+		int[][] postNode = _getShortestPath(u);
+		getShortestPathBetweenTwoNode(u, v, postNode);
 		ArrayList<String> shortestPaths = new ArrayList<String>();
 		ArrayList<Integer> alreadyVisited = new ArrayList<Integer>();
 		findPaths(u,v,shortestPaths, alreadyVisited, postNode);
 		return shortestPaths;
+	}
+	public ArrayList<Integer> getShortestPath(int u, int v){
+		int[][] postNode = _getShortestPath(u);
+		getShortestPathBetweenTwoNode(u, v, postNode);
+		ArrayList<Integer> path = new ArrayList<Integer>();
+		while (u != v) {
+			path.add(u);
+			for (int i = 0; i < n; i++)
+				if (i != u && postNode[u][i] > 0)
+					u = i;
+		}
+		return path;
 	}
 }
