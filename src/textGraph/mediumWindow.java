@@ -6,13 +6,17 @@ import java.awt.event.ItemListener;
 import textGraph.Graph;
 import textGraph.features;
 class mediumWindow{
+	/** graph is the Graph we got just now. */
 	public static Graph graph;
+	/** targetPath is the directory we are going to save the pictures. */
 	public static String targetPath;
 	public JFrame mediumFrame;
 	public JLabel label1;
 	public JLabel label2;
 	public static JTextField pictureName;
+	/** fileTypeChooser is a combobox to select the type of the picture. */
 	public static JComboBox<String> fileTypeChooser;
+	/** These five buttons trigger different functions to achieve the requirements.*/
 	public static JButton buttonShowDirectedGraph;
 	public static JButton buttonQueryBridgeWords;
 	public static JButton buttonGenerateNewText;
@@ -54,35 +58,38 @@ class mediumWindow{
 		fileTypeChooser.addItemListener(chooseAction);
 		container.add(fileTypeChooser);
 		
-		buttonShowDirectedGraph = new JButton("ShowDirectedGraph");
+		buttonShowDirectedGraph = new JButton("Show the directed graph");
 		buttonShowDirectedGraph.setBounds(420, 130, 360, 50);
 		buttonShowDirectedGraph.setEnabled(false);
 		buttonShowDirectedGraph.addActionListener(new features());
 		container.add(buttonShowDirectedGraph);
 		
-		buttonQueryBridgeWords = new JButton("QueryBridgeWords");
+		buttonQueryBridgeWords = new JButton("Query bridge words");
 		buttonQueryBridgeWords.setBounds(420, 200, 360, 50);
 		buttonQueryBridgeWords.addActionListener(new features());
 		container.add(buttonQueryBridgeWords);
 		
-		buttonGenerateNewText = new JButton("GenerateNewText");
+		buttonGenerateNewText = new JButton("Generate new text");
 		buttonGenerateNewText.setBounds(420, 270, 360, 50);
 		buttonGenerateNewText.addActionListener(new features());
 		container.add(buttonGenerateNewText);
 		
-		buttonCalcShortestPath = new JButton("CalcShortestPath");
+		buttonCalcShortestPath = new JButton("Calculate shortest path");
 		buttonCalcShortestPath.setBounds(420, 340, 360, 50);
 		buttonCalcShortestPath.setEnabled(false);
 		buttonCalcShortestPath.addActionListener(new features());
 		container.add(buttonCalcShortestPath);
 		
-		buttonRandomWalk = new JButton("RandomWalk");
+		buttonRandomWalk = new JButton("Random walk");
 		buttonRandomWalk.setBounds(420, 410, 360, 50);
 		buttonRandomWalk.addActionListener(new features());
 		container.add(buttonRandomWalk);
 		
 	}
-	
+	/**
+	 * chooseAction can set buttonShowDirectedGraph button and buttonCalcShortestPath button unavailable when the type
+	 * of the picture is not selected.
+	 */
 	ItemListener chooseAction = new ItemListener() {
 		public void itemStateChanged(ItemEvent event) {
 			if(event.getStateChange() == ItemEvent.SELECTED) {

@@ -1,5 +1,7 @@
 package textGraph;
 import javax.swing.*;
+
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -7,43 +9,56 @@ import java.io.File;
 import javax.swing.JOptionPane;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import textGraph.GraphViz;
 public class features implements ActionListener {
-	
-	String[] colors = {"aliceblue", "antiquewhite","aqua","aquamarine","azure",
-			"beige","bisque","black","blanchedalmond","blue",
-			"blueviolet","brown","burlywood","cadetblue","chartreuse",
+	/**colors stores the names of color that can be used as the color of nodes and edges.*/
+	String[] colors = {"pink","purple","darkcyan","brown","red","mediumspringgreen",
+			"tomato","mediumslateblue","forestgreen","indigo","teal","blue","orangered",
+			"beige","bisque","black","blanchedalmond","aliceblue","steelblue","tan","thistle",
+			"blueviolet","burlywood","cadetblue","chartreuse","lightgoldenrodyellow",
 			"chocolate","coral","cornflowerblue","cornsilk","crimson",
-			"cyan ","darkblue","darkcyan","darkgoldenrod","darkgray",
+			"cyan","darkblue","darkgoldenrod","aqua","darkgray",
 			"darkgreen","darkgrey","darkkhaki","darkmagenta","darkolivegreen",
 			"darkorange","darkorchid","darkred","darksalmon","darkseagreen",
 			"darkslateblue","darkslategray","darkslategrey","darkturquoise","darkviolet",
-			"deeppink","deepskyblue","dimgray","dimgrey","dodgerblue",
-			"firebrick","forestgreen","fuchsia","gainsboro","gold","goldenrod","gray","grey",
+			"deeppink","deepskyblue","dimgrey","dodgerblue",
+			"firebrick","fuchsia","lightyellow", "gainsboro","gold","goldenrod","gray","grey",
 			"green","greenyellow","honeydew","hotpink","indianred",
-			"indigo","ivory","khaki","lavender","lavenderblush",
+			"ivory","khaki","lavender","lavenderblush","dimgray",
 			"lawngreen","lemonchiffon","lightblue","lightcoral","lightcyan",
-			"lightgoldenrodyellow","lightgray","lightgreen","lightgrey","lightpink",
+			"lightgray","lightgreen","lightgrey","lightpink",
 			"lightsalmon","lightseagreen","lightskyblue","lightslategray","lightslategrey",
-			"lightsteelblue","lightyellow","lime","limegreen","linen",
-			"magenta","maroon","mediumaquamarine","mediumblue","mediumorchid",
-			"mediumpurple","mediumseagreen","mediumslateblue","mediumspringgreen","mediumturquoise",
+			"lightsteelblue","lime","linen","magenta","maroon","mediumaquamarine","mediumblue","mediumorchid",
+			"mediumpurple","mediumseagreen","mediumturquoise",
 			"mediumvioletred","midnightblue","mistyrose","moccasin",
-			"navajowhite","navy","oldlace","olive","olivedrab",
-			"orange	orangered","orchid","palegoldenrod","palegreen",
-			"paleturquoise","palevioletred","papayawhip","peachpuff","peru", 
-			"pink","plum","powderblue","purple","red",
-			"rosybrown","royalblue","saddlebrown","salmon","sandybrown",
+			"navajowhite","navy","oldlace","antiquewhite","limegreen","olive","olivedrab",
+			"orange","orchid","palegoldenrod","palegreen",
+			"paleturquoise","palevioletred","papayawhip","peachpuff","peru", "plum","powderblue",
+			"rosybrown","royalblue","saddlebrown","aquamarine","salmon","sandybrown",
 			"seagreen","seashell","sienna","silver","skyblue",
-			"slateblue","slategray","slategrey","springgreen",
-			"steelblue","tan","teal","thistle","tomato",
+			"slateblue","slategray","slategrey","azure","springgreen",
 			"turquoise","violet","wheat","yellow","yellowgreen"};
+	/** id is the node id used in function randomWalk*/
+	int id;
+	/**visited is a two-dimensional integer list to record which edges have been visited in function calcShortestPath and randomWalk*/
+	int[][] visited = new int[mediumWindow.graph.n][mediumWindow.graph.n];
+	/**SS is the current string used in function randomWalk*/
+	String SS;
 	
   public void actionPerformed(ActionEvent event) {
     if (event.getSource().equals(mediumWindow.buttonShowDirectedGraph)) {
+    		/*
+    		 * when the picture name is empty
+    		 */
     		if(mediumWindow.pictureName.getText().isEmpty()) {
     			JOptionPane.showMessageDialog(null, "Please enter a picture name!");
     		}
+    		/*
+    		 * when the picture name is not empty
+    		 */
     		else {
     			String d = mediumWindow.targetPath;
     			String n = mediumWindow.pictureName.getText();
@@ -63,7 +78,7 @@ public class features implements ActionListener {
     		readWords.minimumWindow.setVisible(true);
     }
     else if (event.getSource().equals(mediumWindow.buttonGenerateNewText)) {
-    		newText newTextGenerated = new newText();
+    		newText newTextGenerated = new newText(mediumWindow.graph);
     		newTextGenerated.minimumWindow.setVisible(true);
     }
     else if (event.getSource().equals(mediumWindow.buttonCalcShortestPath)) {
@@ -72,11 +87,23 @@ public class features implements ActionListener {
     	
     }
     else if (event.getSource().equals(mediumWindow.buttonRandomWalk)) {
-    		String SS = "sdfdfvds";
-    		walkText randomWalkText = new walkText(SS);
+    		SS = "";
+    		id = -1;
+    		for(int i = 0; i < mediumWindow.graph.n; ++i) {
+    			for(int j = 0; j < mediumWindow.graph.n; ++j) {
+    				visited[i][j] = 0;
+			}
+		}
+    		walkText randomWalkText = new walkText();
     		randomWalkText.minimumWindow.setVisible(true);
     }
   }
+  /**
+   * create a frame to get the two words used in function queryBridgeWords
+   * and show the bridge word(s)
+   * @author HolynovaSD
+   *
+   */
   private class inWords extends JFrame{
 	  private static final long serialVersionUID = 1L;
 	  public JFrame minimumWindow;
@@ -122,7 +149,12 @@ public class features implements ActionListener {
 		  }
 	  }
   }
-  
+  /**
+   * create a frame to get the original text used in function generateNewText
+   * and show the generated text in the window
+   * @author HolynovaSD
+   *
+   */
   private class newText extends JFrame{
 	  private static final long serialVersionUID = 1L;
 	  public JFrame minimumWindow;
@@ -131,7 +163,10 @@ public class features implements ActionListener {
 	  public JScrollPane jspin;
 	  public JScrollPane jspout;
 	  public JButton write;
-	  public newText() {
+	  public Graph g;
+	  public newText(Graph graph) {
+		  g = graph;
+		  
 		  minimumWindow = new JFrame();
 		  minimumWindow.setLocation(800, 10);
 		  minimumWindow.setSize(900, 600);
@@ -143,6 +178,7 @@ public class features implements ActionListener {
 		  inText.setLineWrap(true);
 		  inText.setEditable(true);
 		  inText.setWrapStyleWord(true);
+		  inText.setFont(new Font("Time New Roman", Font.BOLD, 16));
 		  
 		  jspin = new JScrollPane(inText);
 		  jspin.setBounds(30, 0, 400, 530);
@@ -153,6 +189,7 @@ public class features implements ActionListener {
 		  outText.setLineWrap(true);
 		  outText.setEditable(false);
 		  outText.setWrapStyleWord(true);
+		  outText.setFont(new Font("Time New Roman", Font.BOLD, 16));
 		  
 		  jspout = new JScrollPane(outText);
 		  jspout.setBounds(470, 0, 400, 530);
@@ -170,17 +207,23 @@ public class features implements ActionListener {
 			  }
 			  else {
 				  String lText = inText.getText();
-				  String rText = lText;
+				  String rText = generateNewText(g, lText);
 				  outText.setText(rText);
 			  }
 		  }
 	  }
   }
-  
+  /**
+   * create a frame to get one or two node(s) used in function calcShortestPath
+   * and deliver the parameters to class showPathPicture to show the picture
+   * @author HolynovaSD
+   *
+   */
   private class shortestPath extends JFrame{
 	  private static final long serialVersionUID = 1L;
 	  public JFrame minimumWindow;
-	  public JLabel label;
+	  public JLabel label1;
+	  public JLabel label2;
 	  public JTextField leftWord;
 	  public JTextField rightWord;
 	  public JButton query;
@@ -189,24 +232,28 @@ public class features implements ActionListener {
 		  g = graph;
 		  minimumWindow = new JFrame();
 		  minimumWindow.setLocation(400, 10);
-		  minimumWindow.setSize(400, 200);
+		  minimumWindow.setSize(550, 200);
 		  minimumWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		  minimumWindow.getContentPane().setLayout(null);
 		  
-		  label = new JLabel("Please enter two words:");
-		  label.setBounds(50, 50, 300, 20);
-		  minimumWindow.getContentPane().add(label);
+		  label1 = new JLabel("start word(necessary):");
+		  label1.setBounds(50, 50, 200, 20);
+		  minimumWindow.getContentPane().add(label1);
+		  
+		  label2 = new JLabel("end word(not necessary):");
+		  label2.setBounds(300, 50, 200, 20);
+		  minimumWindow.getContentPane().add(label2);
 		  
 		  leftWord = new JTextField();
-		  leftWord.setBounds(50, 80, 140, 20);
+		  leftWord.setBounds(50, 80, 200, 20);
 		  minimumWindow.getContentPane().add(leftWord);
 		  
 		  rightWord = new JTextField();
-		  rightWord.setBounds(210, 80, 140, 20);
+		  rightWord.setBounds(300, 80, 200, 20);
 		  minimumWindow.getContentPane().add(rightWord);
 		  
-		  query = new JButton("CalcShortestPath");
-		  query.setBounds(100, 110, 200, 40);
+		  query = new JButton("Calculate");
+		  query.setBounds(150, 110, 250, 40);
 		  query.addActionListener(new queryWord());
 		  minimumWindow.getContentPane().add(query);
 	  }
@@ -223,43 +270,16 @@ public class features implements ActionListener {
 					  String type = (String)mediumWindow.fileTypeChooser.getSelectedItem();
 					  String fullName = dir + "/" + name + "-" + startnode + "-" + "ShortestPath." + type;
 					  File out = new File(fullName);
-					  if(out.exists()) {
-						  JOptionPane.showMessageDialog(null, fullName + " has already existed! Please change that file's name.");
+					  if(g.getIndex(startnode) == -1 ) {
+						  JOptionPane.showMessageDialog(null, startnode + " is not in the graph!");
 					  }
 					  else {
-						  if(g.getIndex(startnode) == -1 ) {
-							  JOptionPane.showMessageDialog(null, startnode + " is not in the graph!");
+						  if(out.exists()) {
+							  JOptionPane.showMessageDialog(null, fullName + " already exists! Please change that file's name.");
 						  }
 						  else {
-							  GraphViz gv = new GraphViz();
-							  gv.setdir(dir);
-							  gv.addln(gv.start_graph());
-							  String line;
-							  for(int j = 0; j < g.n; ++j) {
-								  int i = g.getIndex(startnode);
-								  if(j != i) {
-									  ArrayList<Integer> result = g.getShortestPath(i, j);
-									  System.out.println(result);
-									  if(result.get(result.size() - 1) != -1) {
-										  for(int k = 1; k < result.size(); ++i) {
-											  System.out.println(g.getName(result.get(k)));
-											  System.out.println("\n");
-											  line = "";
-											  line += startnode;
-											  line += " -> ";
-											  line += g.getName(result.get(k));
-											  line += " [ label = \"";
-											  line += Integer.toString(g.queryWeight(i, result.get(k)));
-											  line += "\", color = \"";
-											  line += colors[j];
-											  line += "\" ];";
-											  gv.addln(line);
-										  }
-									  }
-								  }
-							  }
-							  gv.addln(gv.end_graph());
-							  gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
+							  showPathPicture sp = new showPathPicture(g, fullName, startnode);
+							  sp.microWindow.setVisible(true);
 						  }
 					  }
 				  }
@@ -271,47 +291,252 @@ public class features implements ActionListener {
 					  String type = (String)mediumWindow.fileTypeChooser.getSelectedItem();
 					  String fullName = dir + "/" + name + "-" + startnode + "-" + endnode + "-" + "ShortestPath." + type;
 					  File out = new File(fullName);
-					  if(out.exists()) {
-						  JOptionPane.showMessageDialog(null, fullName + " has already existed! Please change that file's name.");
+					  if(g.getIndex(startnode) == -1) {
+						  JOptionPane.showMessageDialog(null, startnode + " is not in the graph!");
+					  }
+					  else if(g.getIndex(endnode) == -1) {
+						  JOptionPane.showMessageDialog(null, startnode + " is not in the graph!");
 					  }
 					  else {
-						  
+						  if(out.exists()) {
+							  JOptionPane.showMessageDialog(null, fullName + " already exists! Please change that file's name.");
+						  }
+						  else {
+							  showPathPicture sp = new showPathPicture(g, fullName, startnode, endnode);
+							  sp.microWindow.setVisible(true);
+							  
+						  }
 					  }
 				  }
 			  }
 		  }
 	  }
   }
-  
+  /**
+   * create a frame to show the shortest path picture
+   * @author HolynovaSD
+   *
+   */
+  private class showPathPicture extends JFrame{
+	  private static final long serialVersionUID = 1L;
+	  public JFrame microWindow;
+	  public JLabel picture;
+	  public JTextArea pathsShowing;
+	  public JScrollPane jsp;
+	  public String oneLinePaths;
+	  public showPathPicture(Graph graph, String name, String word) {
+		  oneLinePaths = "";
+		  ArrayList<String> paths = calcShortestPath(graph, word);
+		  for(String patheElements : paths) {
+			  oneLinePaths += patheElements;
+		  }
+		  if(oneLinePaths.equals("")) {
+			  JOptionPane.showMessageDialog(null, word + " points to no word in the graph!");
+		  }
+		  else {
+			  microWindow = new JFrame();
+			  microWindow.setLocation(700, 10);
+			  microWindow.setSize(1200, 800);
+			  microWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			  microWindow.getContentPane().setLayout(null);
+		  
+			  pathsShowing = new JTextArea();
+			  pathsShowing.setSize(600, 800);
+			  pathsShowing.setLineWrap(true);
+			  pathsShowing.setEditable(false);
+			  pathsShowing.setWrapStyleWord(true);
+			  pathsShowing.setText(oneLinePaths);
+			  pathsShowing.setFont(new Font("Time New Roman", Font.BOLD, 16));
+		  
+			  jsp = new JScrollPane(pathsShowing);
+			  jsp.setBounds(600, 0, 600, 800);
+			  microWindow.getContentPane().add(jsp);
+		  
+			  picture = new JLabel();
+			  picture.setSize(600, 770);
+			  microWindow.getContentPane().add(picture);
+			  ImageIcon icon = new ImageIcon(name);
+	  
+			  int imgWidth = icon.getIconWidth();  
+			  int imgHeight = icon.getIconHeight();  
+			  int conWidth = picture.getWidth(); 
+			  int conHeight = picture.getHeight();
+			  int reImgWidth;  
+			  int reImgHeight;  
+			  if (((double)imgWidth / imgHeight) > ((double)conWidth / conHeight)) {
+				  reImgWidth = conWidth;  
+				  reImgHeight = imgHeight * conWidth / imgWidth;
+			  }
+			  else { 
+				  reImgHeight = conHeight;  
+				  reImgWidth = imgWidth * conHeight / imgHeight;
+			  }  
+			  Image img = icon.getImage();  
+			  img = img.getScaledInstance(reImgWidth, reImgHeight, Image.SCALE_DEFAULT);  
+			  icon.setImage(img); 
+			  picture.setIcon(icon);
+			  picture.setHorizontalAlignment(SwingConstants.CENTER);
+		  }
+	  }
+	  public showPathPicture(Graph graph, String name, String word1, String word2) {
+		  oneLinePaths = calcShortestPath(graph, word1, word2);
+		  if(oneLinePaths.equals("")) {
+			  JOptionPane.showMessageDialog(null, word1 + " does not point to " + word2 + " !");
+		  }
+		  else {
+			  microWindow = new JFrame();
+			  microWindow.setLocation(700, 10);
+			  microWindow.setSize(1200, 800);
+			  microWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+			  microWindow.getContentPane().setLayout(null);
+		  
+			  pathsShowing = new JTextArea();
+			  pathsShowing.setSize(600, 800);
+			  pathsShowing.setLineWrap(true);
+			  pathsShowing.setEditable(false);
+			  pathsShowing.setWrapStyleWord(true);
+			  pathsShowing.setText(oneLinePaths);
+			  pathsShowing.setFont(new Font("Time New Roman", Font.BOLD, 16));
+		  
+			  jsp = new JScrollPane(pathsShowing);
+			  jsp.setBounds(600, 0, 600, 800);
+			  microWindow.getContentPane().add(jsp);
+		  
+			  picture = new JLabel();
+			  picture.setSize(600, 770);
+			  microWindow.getContentPane().add(picture);
+			  ImageIcon icon = new ImageIcon(name);
+	  
+			  int imgWidth = icon.getIconWidth();  
+			  int imgHeight = icon.getIconHeight();  
+			  int conWidth = picture.getWidth(); 
+			  int conHeight = picture.getHeight();
+			  int reImgWidth;  
+			  int reImgHeight;  
+			  if (((double)imgWidth / imgHeight) > ((double)conWidth / conHeight)) {
+				  reImgWidth = conWidth;  
+				  reImgHeight = imgHeight * conWidth / imgWidth;
+			  }
+			  else { 
+				  reImgHeight = conHeight;  
+				  reImgWidth = imgWidth * conHeight / imgHeight;
+			  }  
+			  Image img = icon.getImage();  
+			  img = img.getScaledInstance(reImgWidth, reImgHeight, Image.SCALE_DEFAULT);  
+			  icon.setImage(img); 
+			  picture.setIcon(icon);
+			  picture.setHorizontalAlignment(SwingConstants.CENTER);
+		  }
+	  }
+  }
+  /**
+   * create a frame show the random walk text
+   * @author HolynovaSD
+   *
+   */
   private class walkText extends JFrame{
 	  private static final long serialVersionUID = 1L;
 	  public JFrame minimumWindow;
 	  public JTextArea wText;
 	  public JScrollPane jsp;
-	  public walkText(String S) {
+	  public Timer timer;
+	  public JButton goOn;
+	  public JButton pause;
+	  public JButton clear;
+	  public walkText() {
 		  minimumWindow = new JFrame();
 		  minimumWindow.setLocation(1000, 10);
 		  minimumWindow.setSize(800, 400);
 		  minimumWindow.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		  minimumWindow.getContentPane().setLayout(null);
 		  
-		  wText = new JTextArea(60, 30);
-		  wText.setSize(800, 400);
+		  wText = new JTextArea();
+		  wText.setSize(800, 300);
 		  wText.setLineWrap(true);
 		  wText.setEditable(false);
 		  wText.setWrapStyleWord(true);
-		  wText.setText(S);
+		  wText.setFont(new Font("Time New Roman", Font.BOLD, 16));
 		  
 		  jsp = new JScrollPane(wText);
-		  jsp.setBounds(0, 0, 800, 400);
+		  jsp.setBounds(0, 0, 800, 300);
 		  minimumWindow.getContentPane().add(jsp);
+		  
+
+		  timer = new Timer();
+		  
+		  goOn = new JButton("Start");
+		  goOn.setBounds(70, 325, 160, 25);
+		  goOn.addActionListener(new textGenerating());
+		  goOn.setEnabled(true);
+		  minimumWindow.getContentPane().add(goOn);
+		  
+		  pause = new JButton("Pause");
+		  pause.setBounds(300, 325, 160, 25);
+		  pause.addActionListener(new textGenerating());
+		  pause.setEnabled(false);
+		  minimumWindow.getContentPane().add(pause);
+		  
+		  clear = new JButton("Clear");
+		  clear.setBounds(550, 325, 160, 25);
+		  clear.addActionListener(new textGenerating());
+		  clear.setEnabled(false);
+		  minimumWindow.getContentPane().add(clear);
+	  }
+	  private class textGenerating implements ActionListener{
+		  public void actionPerformed(ActionEvent event) {
+			  if(event.getSource().equals(goOn)) {
+				  goOn.setEnabled(false);
+				  pause.setEnabled(true);
+				  clear.setEnabled(false);
+				  if(timer == null) {
+					  timer = new Timer();
+				  }
+				  timer.schedule(new MyTask(), 0, 500);
+			  }
+			  else if(event.getSource().equals(pause)){
+				  pause.setEnabled(false);
+				  clear.setEnabled(true);
+				  timer.cancel();
+				  timer = null;
+				  if(id == -1) {
+					  goOn.setEnabled(false);
+					  goOn.setText("Start");
+				  }
+				  else {
+					  goOn.setEnabled(true);
+					  goOn.setText("Go on");
+				  }
+			  }
+			  else if(event.getSource().equals(clear)) {
+				  goOn.setEnabled(true);
+				  pause.setEnabled(false);
+				  clear.setEnabled(false);
+				  SS = "";
+				  id = -1;
+				  wText.setText(SS);
+				  goOn.setText("Start");
+				  for(int i = 0; i < mediumWindow.graph.n; ++i) {
+					  for(int j = 0; j < mediumWindow.graph.n; ++j) {
+						  visited[i][j] = 0;
+					  }
+				  }
+			  }
+		  }
+		  class MyTask extends TimerTask{
+			  public void run() {
+				  SS = randomWalk(mediumWindow.graph);
+				  wText.setText(SS);
+				  if(id == -1) {
+					  pause.doClick(1);
+				  }
+			  }
+		  }
 	  }
   }
-  
-  void showShortestPathGraph(Graph g, String s, File picture) {
-	  
-  }
-
+  /**
+   * use g and class GraphViz to generate a picture
+   * @param g
+   */
   void ShowDirectedGraph(Graph g) {
 	  String dir = mediumWindow.targetPath;
 	  String name = mediumWindow.pictureName.getText();
@@ -348,11 +573,11 @@ public class features implements ActionListener {
 	  if(type == "jpg" || type == "png" || type == "gif") {
 		  JFrame showPicture = new JFrame(name + "." + type);
 		  showPicture.setVisible(true);
-		  showPicture.setSize(600, 800);
+		  showPicture.setSize(600, 1000);
 		  showPicture.setLocation(1000, 10);
 		  showPicture.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		  JLabel label = new JLabel();
-		  label.setSize(570, 770);
+		  label.setSize(570, 970);
 		  showPicture.getContentPane().add(label);
 		  ImageIcon icon = new ImageIcon(fullName);
 	  
@@ -377,17 +602,23 @@ public class features implements ActionListener {
 		  label.setHorizontalAlignment(SwingConstants.CENTER);
 	  }
 	  else {
-		  JOptionPane.showMessageDialog(null, fullName + " has been saved to the choosen path.But it can not been shown in this window.");
+		  JOptionPane.showMessageDialog(null, fullName + " has been saved to the choosen path. But it can not been shown in this window.");
 	  }
   }
-  
-  public String queryBridgeWords(Graph G, String word1, String word2) {
+  /**
+   * get the bridge word in graph G between word1 and word2
+   * @param G
+   * @param word1
+   * @param word2
+   * @return
+   */
+  String queryBridgeWords(Graph G, String word1, String word2) {
 	  ArrayList<Integer> bridgeList = G.getBridges(word1, word2);
 	  String output;
 	  if (bridgeList.size() == 0) {
-		  output = "No bridge words from "+word1+" to "+word2+"!";
+		  output = "No bridge word from "+word1+" to "+word2+"!";
 	  }else if(bridgeList.size() == 1){
-		  output = "The bridge words from "+word1+" to "+word2+" is: " + G.getName(bridgeList.get(0));
+		  output = "The bridge word from "+word1+" to "+word2+" is: " + G.getName(bridgeList.get(0));
 	  }
 	  else{
 		  output = "The bridge words from "+word1+" to "+word2+" are: ";
@@ -399,5 +630,223 @@ public class features implements ActionListener {
 	  }
 	  return output;
   }
-  
+  /**
+   * use bridge word to generate new text from input
+   * @param g
+   * @param input
+   * @return
+   */
+  String generateNewText(Graph g, String input) {
+	  String output = "";
+	  String[] words = input.split(" ");
+	  int len = words.length;
+	  ArrayList<Integer> bridgeList;
+	  String lWord = words[0], rWord = "";
+	  for(int i = 1; i < len; ++i) {
+		  rWord = words[i];
+		  output += lWord;
+		  output += " ";
+		  if(g.getIndex(lWord) != -1 && g.getIndex(rWord) != -1) {
+			  bridgeList = g.getBridges(lWord, rWord);
+			  if(bridgeList.size() != 0) {
+				  output += g.getName(bridgeList.get(0));
+				  output += " ";
+			  }
+		  }
+		  lWord = rWord;
+	  }
+	  output += rWord;
+	  return output;
+  }
+  /**
+   * get the shortest paths from word to all other words in g
+   * @param g
+   * @param word
+   * @return
+   */
+  ArrayList<String> calcShortestPath(Graph g, String word) {
+	  String dir = mediumWindow.targetPath;
+	  String name = mediumWindow.pictureName.getText();
+	  String type = (String)mediumWindow.fileTypeChooser.getSelectedItem();
+	  String fullName = dir + "/" + name + "-" + word + "-" + "ShortestPath." + type;
+	  GraphViz gv = new GraphViz();
+	  gv.setdir(dir);
+	  gv.addln(gv.start_graph());
+	  ArrayList<String> paths = new ArrayList<String>();
+	  String path;
+	  String line;
+	  int i, j;
+	  i = g.getIndex(word);
+	  for(int m = 0; m < g.n; ++m) {
+		  for(int k = 0; k < g.n; ++k) {
+			  visited[m][k] = 0;
+		  }
+	  }
+	  for(j = 0; j < g.n; ++j) {
+		  path = "";
+		  if(j == i) {
+			  continue;
+		  }
+		  else {
+			  ArrayList<Integer> result = g.getShortestPath(i, j);
+			  if(result.get(result.size() - 1) == -1) {
+				  continue;
+			  }
+			  else {
+				  result.add(j);
+				  int x = 0, y;
+				  path += g.getName(result.get(x));
+				  for(y = 1; y < result.size(); ++y) {
+					  line = "";
+					  line += g.getName(result.get(x));
+					  line += " -> ";
+					  line += g.getName(result.get(y));
+					  line += " [ label = \"";
+					  line += Integer.toString(g.queryWeight(result.get(x), result.get(y)));
+					  line += "\", color = \"";
+					  line += colors[j];
+					  line += "\" ];";
+					  gv.addln(line);
+					  path += " ";
+					  path += g.getName(result.get(y));
+					  visited[result.get(x)][result.get(y)] ++;
+					  x = y;
+				  }
+				  path += "\n";
+				  paths.add(path);
+			  }
+		  }
+	  }
+	  for(i = 0; i < g.n; ++i) {
+		  for(j = 0; j < g.n; ++j) {
+			  if(g.queryWeight(i, j) > 0 && visited[i][j] == 0) {
+				  line = "";
+				  line += g.getName(i);
+				  line += " -> ";
+				  line += g.getName(j);
+				  line += " [ label = \"";
+				  line += Integer.toString(g.queryWeight(i, j));
+				  line += "\", style = dotted ];";
+				  gv.addln(line);
+			  }
+		  }
+	  }
+	  gv.addln(gv.end_graph());
+	  File out = new File(fullName);
+	  gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
+	  return paths;
+  }
+  /**
+   * get all shortest paths from word1 to word2 in g
+   * @param g
+   * @param word1
+   * @param word2
+   * @return
+   */
+  String calcShortestPath(Graph g, String word1, String word2) {
+	  String dir = mediumWindow.targetPath;
+	  String name = mediumWindow.pictureName.getText();
+	  String type = (String)mediumWindow.fileTypeChooser.getSelectedItem();
+	  String fullName = dir + "/" + name + "-" + word1 + "-" + word2 + "-" + "ShortestPath." + type;
+	  String path = "";
+	  String line = "";
+	  int x = g.getIndex(word1);
+	  int y = g.getIndex(word2);
+	  ArrayList<ArrayList<Integer>> result = g.getShortestPathList(x, y);
+	  for(int m = 0; m < g.n; ++m) {
+		  for(int k = 0; k < g.n; ++k) {
+			  visited[m][k] = 0;
+		  }
+	  }
+	  GraphViz gv = new GraphViz();
+	  gv.setdir(dir);
+	  gv.addln(gv.start_graph());
+	  if(result.size() != 0) {
+		  line = "";
+		  line += "LEN";
+		  line += " [ label = \"length = ";
+		  line += Integer.toString(result.get(0).get(0));
+		  line += "\"  shape = plaintext] ";
+		  gv.addln(line);
+		  for(int i = 0; i < result.size(); ++i) {
+			  path += g.getName(result.get(i).get(1));
+			  for(int j = 2; j < result.get(i).size(); ++j) {
+				  line = "";
+				  line += g.getName(result.get(i).get(j - 1));
+				  line += " -> ";
+				  line += g.getName(result.get(i).get(j));
+				  line += " [ label = \"";
+				  line += Integer.toString(g.queryWeight(result.get(i).get(j - 1), result.get(i).get(j)));
+				  line += "\", color = \"";
+				  line += colors[i];
+				  line += "\" ];";
+				  gv.addln(line);
+				  path += " ";
+				  path += g.getName(result.get(i).get(j));
+				  visited[result.get(i).get(j - 1)][result.get(i).get(j)] ++;
+			  }
+			  path += "\n";
+		  }
+		  for(int i = 0; i < g.n; ++i) {
+			  for(int j = 0; j < g.n; ++j) {
+				  if(g.queryWeight(i, j) > 0 && visited[i][j] == 0) {
+					  line = "";
+					  line += g.getName(i);
+					  line += " -> ";
+					  line += g.getName(j);
+					  line += " [ label = \"";
+					  line += Integer.toString(g.queryWeight(i, j));
+					  line += "\", style = dotted ];";
+					  gv.addln(line);
+				  }
+			  }
+		  }
+		  gv.addln(gv.end_graph());
+		  File out = new File(fullName);
+		  gv.writeGraphToFile( gv.getGraph( gv.getDotSource(), type ), out );
+	  }
+	  return path;
+  }
+  /**
+   * generate new text by random walk in G
+   * @param G
+   * @return
+   */
+  String randomWalk(Graph G) {
+	  Random rand = new Random();
+	  String output = SS;
+	  int u;
+	  if(id == -1) {
+		  u = rand.nextInt(G.n);
+		  id = u;
+		  output += G.getName(u);
+		  output += " ";
+		  return output;
+	  }
+	  else {
+		  u = id;
+		  ArrayList<Integer> nextNodes = new ArrayList<Integer>();
+		  nextNodes.clear();
+		  for(int i = 0; i < G.n; ++i) {
+			  if(G.queryWeight(u, i) > 0) {
+				  nextNodes.add(i);
+			  }
+		  }
+		  if(nextNodes.size() == 0) {
+			  id = -1;
+		  }
+		  else {
+			  id = nextNodes.get(rand.nextInt(nextNodes.size()));
+			  output += G.getName(id);
+			  output += " ";
+			  if(visited[u][id] == 1) {
+				  id = -1;
+			  }
+			  else {
+				  visited[u][id] = 1;
+			  }
+		  }
+		  return output;
+	  }
+	}  
 }
