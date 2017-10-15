@@ -4,6 +4,7 @@ import java.util.Random;
 import textGraph.Graph;
 
 public class RequiredFunctions {
+    /*get bridge words*/
 	public String queryBridgeWords(Graph G, String word1, String word2) {
 		ArrayList<Integer> bridgeList = G.getBridges(word1, word2);
 		String output;
