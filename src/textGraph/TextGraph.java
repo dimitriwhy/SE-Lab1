@@ -15,7 +15,7 @@ class TextGraph{
 	public static JButton browseTarget;
 	public static JButton createGraph;
 	/**
-	 * Launch the application;
+	 * Launch the application.
 	 * @param args
 	 */
 	public static void main(String[] args) {

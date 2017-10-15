@@ -1,13 +1,13 @@
 package textGraph;
 import java.util.*;
 public class Graph {
-	/** n is the number of nodes in the graph */
+	/** n is the number of nodes in the graph. */
 	public int n;
-	/** map is the adjacent matrix for graph */
+	/** map is the adjacent matrix for graph. */
 	private int [][] map;
-	/** names is the word for a specific node */
+	/** names is the word for a specific node. */
 	private String[] names;
-	/** nameMap is the map between words to indexes */
+	/** nameMap is the map between words to indexes. */
 	private Map<String, Integer> nameMap = new HashMap<String, Integer>();
 	/**
 	 * @param input_n number of nodes in the graph
