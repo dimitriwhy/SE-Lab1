@@ -68,7 +68,7 @@ public class GraphViz {
      */
     private int currentDpiPos = 15;
     /**
-     * set the dir. where temporary files will be created.
+     * set the directory. where temporary files will be created.
      */
     public void setdir(String path) {
 	    TEMP_DIR = path;

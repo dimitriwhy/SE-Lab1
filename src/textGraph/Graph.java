@@ -10,7 +10,7 @@ public class Graph {
 	/** nameMap is the map between words to indexes */
 	private Map<String, Integer> nameMap = new HashMap<String, Integer>();
 	/**
-	 * @param input_n number of nodes in the graph
+	 * @param input_n number of nodes in the graph.
 	 */
 	public Graph(int input_n) {
 		n = input_n;
