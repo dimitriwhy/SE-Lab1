@@ -20,6 +20,7 @@ public class RequiredFunctions {
 		}
 		return output;
 	}
+    /*randomWalk*/
 	public String randomWalk(Graph G) {
 		Random rand = new Random();
 		int u = rand.nextInt(G.n);

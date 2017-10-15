@@ -46,7 +46,7 @@ import java.io.InputStreamReader;
 */
 public class GraphViz {
     /**
-     * The dir. where temporary files will be created.
+     * The directory. where temporary files will be created.
      */
     private static String TEMP_DIR ;
 
